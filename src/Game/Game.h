@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL2/SDL.h>
-
+#include "../ECS/ECS.h"
+#include "../Components/TransformComponent.h"
 const int FPS = 2;
 const int MILLISECS_PER_FRAME = 1000 / FPS;
 
@@ -13,6 +14,7 @@ private:
 	int windowWidth = 800;
 	int windowHeight = 600;
 	bool fullscreen = false;
+
 public:
 	Game();
 	~Game();

@@ -25,6 +25,30 @@
     <Filter Include="Source Files\Game">
       <UniqueIdentifier>{8dbf332b-5d71-4463-916e-1deb177982c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ECS">
+      <UniqueIdentifier>{74818f9e-73fd-4c49-ba32-8a2d02f9005f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ECS">
+      <UniqueIdentifier>{2cd8c380-048b-415e-adaf-0ed4c8026eed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Component">
+      <UniqueIdentifier>{7b6e09a3-03f2-44c0-811b-447418bbe7d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entities">
+      <UniqueIdentifier>{f9a087ee-3899-4cab-b4fa-d4c01b51c61f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\System">
+      <UniqueIdentifier>{8794d1b3-35c0-40bc-a5c2-6ba108523837}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entities">
+      <UniqueIdentifier>{cc98331b-e24a-4bf4-bea5-4a26a6a2ff6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component">
+      <UniqueIdentifier>{dfc7da30-0c72-4203-9022-d77794f54b21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\System">
+      <UniqueIdentifier>{65bacb1f-ca81-49bc-a1c3-eef28330a1d2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -36,6 +60,9 @@
     <ClCompile Include="src\Logger\Logger.cpp">
       <Filter>Source Files\Logger</Filter>
     </ClCompile>
+    <ClCompile Include="src\ECS\ECS.cpp">
+      <Filter>Source Files\ECS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Logger\Logger.h">
@@ -43,6 +70,12 @@
     </ClInclude>
     <ClInclude Include="src\Game\Game.h">
       <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ECS\ECS.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Components\TransformComponent.h">
+      <Filter>Header Files\Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
