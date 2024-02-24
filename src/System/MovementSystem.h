@@ -1,19 +1,28 @@
 #pragma once
-
+#include "../ECS/ECS.h"
+#include "../Components/TransformComponent.h"
+#include "../Components/RigidBodyComponent.h"
+#include "../Logger/Logger.h"
 class MovementSystem : public System {
-private:
 public:
-	MovementSystem() {
-		// TODO:
-		// RequireComponent<TransformComponent>();
-		// RequireComponent<...>();
+	MovementSystem(Registry * registry) 
+		:
+		System(registry)
+	{
+		RequireComponent<TransformComponent>();
+		RequireComponent<RigidBodyComponent>();
+
+		Logger::Log("Initialized MovementSystem");
 	}
 
-	void Update() {
-		//TODO:
-		// Loop all entities that the system is interested in
-		// for (auto entity : getAllEntities()) {
-		//	 TODO: Update the position of all entities based on their velocity
-		// }
+	void Update(float deltaTime) {
+		//Loop all entities that the system is interested in
+		for (auto entity : GetEntities()) {
+			//TODO: Update the position of all entities based on their velocity
+			auto& transformComponent = registry->GetComponent<TransformComponent>(entity);
+			const auto & rigidBodyComponent = registry->GetComponent<RigidBodyComponent>(entity);
+
+			transformComponent.position += deltaTime * rigidBodyComponent.velocity;
+		}
 	}
 };

@@ -1,6 +1,7 @@
 #include "ECS.h"
 #include "../Logger/Logger.h"
 #include <string>
+#include <bitset>
 int IComponent::nextId = 0;
 
 void System::AddEntityToSystem(Entity entity)
@@ -18,7 +19,7 @@ void System::RemoveEntityFromSystem(Entity entity)
 	),entities.end());
 }
 
-std::vector<Entity> System::getEntities() const
+std::vector<Entity> System::GetEntities() const
 {
 	return entities;
 }
@@ -31,7 +32,7 @@ const Signature& System::GetComponentSignature() const
 
 // Management of Entities
 Entity Registry::CreateEntity() {
-	int entityId = countEntities++;
+	int entityId = ++countEntities;
 	if (entityId >= entityComponentSignatures.size()) {
 		entityComponentSignatures.resize(entityId + 1);
 	}
@@ -50,7 +51,7 @@ void Registry::KillEntity(Entity entity)
 void Registry::AddEntityToSystems(Entity entity)
 {
 	const auto entityId = entity.GetId();
-
+	
 	const auto signature = entityComponentSignatures[entityId];
 	
 	for (auto [_,system] : systems) {
@@ -60,10 +61,30 @@ void Registry::AddEntityToSystems(Entity entity)
 	}
 }
 
-void Registry::Update()
+void Registry::Update(float deltaTime)
 {
 	// The actual creation and destruction of entities will happen in the update
 	// loop. We don't want to create or destroy entities in the middle of the frame logic.
 	// So we wait until the end of the frame to update and perform creation and 
 	// deletion of entities.
+	for (Entity entity : entitiesToBeAdded) {
+		for (auto [_, system] : systems) {
+			auto systemSignature = system->GetComponentSignature();
+			auto entitySignature = entityComponentSignatures[entity.GetId()];
+			bool isMatch = (systemSignature & entitySignature) == systemSignature;
+			if (isMatch) {
+				system->AddEntityToSystem(entity);
+			}
+		}
+	}
+
+	entitiesToBeAdded.clear();
+	for (Entity entity : entitiesToBeKilled) {
+		for (auto [_, system] : systems) {
+			if (system->GetComponentSignature() == entityComponentSignatures[entity.GetId()]) {
+				system->RemoveEntityFromSystem(entity);
+			}
+		}
+	}
+	entitiesToBeKilled.clear();
 }

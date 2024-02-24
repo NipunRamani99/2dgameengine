@@ -5,8 +5,14 @@
 #include <iostream>
 #include "../Logger/Logger.h"
 #include "../ECS/ECS.h"
+#include "../System/MovementSystem.h"
+#include "../Components/TransformComponent.h"
+#include "../Components/RigidBodyComponent.h"
+#include "../System/RenderSystem.h"
 Game::Game() {
 	Logger::Log("Game constructor called.");
+	registry = std::make_unique<Registry>();
+	Logger::Log("Registry Object Created.");
 }
 
 Game::~Game() {
@@ -81,6 +87,14 @@ void Game::Setup() {
 	* 
 	* registry.registerComponent(tank, component);
 	*/
+
+	Entity tank = registry->CreateEntity();
+	registry->AddComponent<TransformComponent>(tank, glm::vec2{ 10.0,10.0 }, glm::vec2{ 1.0,1.0 }, 0.0);
+	registry->AddComponent<RigidBodyComponent>(tank, glm::vec2{ 50.0,50.0 });
+	registry->AddComponent<SpriteComponent>(tank, 30, 30);
+	registry->AddSystem<MovementSystem>(registry.get());
+	registry->AddSystem<RenderSystem>(registry.get(), renderer);
+	
 }
 
 void Game::ProcessInput() {
@@ -117,7 +131,8 @@ void Game::Update() {
 	// MovementSystem.Update();
 	// CollisionSystem.Update();
 	// DamageSystem.Update();
-	
+	registry->GetSystem<MovementSystem>().Update(deltaTime);
+	registry->Update((float)deltaTime);
 
 }
 
@@ -126,6 +141,6 @@ void Game::Render() {
 	SDL_RenderClear(renderer);
 
 	// TODO: Render Game Objects...
-
+	registry->GetSystem<RenderSystem>().Update(1/60.0f);
 	SDL_RenderPresent(renderer);
 }

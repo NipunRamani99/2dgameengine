@@ -1,8 +1,9 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include "../ECS/ECS.h"
-#include "../Components/TransformComponent.h"
-const int FPS = 2;
+
+#include <memory>
+const int FPS = 60;
 const int MILLISECS_PER_FRAME = 1000 / FPS;
 
 class Game {
@@ -14,7 +15,7 @@ private:
 	int windowWidth = 800;
 	int windowHeight = 600;
 	bool fullscreen = false;
-
+	std::unique_ptr<Registry> registry;
 public:
 	Game();
 	~Game();
