@@ -49,6 +49,9 @@
     <Filter Include="Source Files\System">
       <UniqueIdentifier>{65bacb1f-ca81-49bc-a1c3-eef28330a1d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\AssetStore">
+      <UniqueIdentifier>{7e46ac89-6a5a-44ee-9eb4-bc3befa169e5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -62,6 +65,9 @@
     </ClCompile>
     <ClCompile Include="src\ECS\ECS.cpp">
       <Filter>Source Files\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AssetStore\AssetStore.cpp">
+      <Filter>Header Files\AssetStore</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +94,9 @@
     </ClInclude>
     <ClInclude Include="src\System\RenderSystem.h">
       <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AssetStore\AssetStore.h">
+      <Filter>Header Files\AssetStore</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

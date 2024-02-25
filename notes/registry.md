@@ -95,6 +95,8 @@ struct Entity {
     }
 };
 
+
+
 void updatePosition() {
     for(Entity & entity : getAllEntities()) {
         entity.xyz += entity.vxvyvz;

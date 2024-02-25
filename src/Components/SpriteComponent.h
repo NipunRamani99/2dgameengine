@@ -1,8 +1,14 @@
 #pragma once
+#include <SDL2/SDL.h>
 struct SpriteComponent {
-	int width = 0;
-	int height = 0;
-
+	SDL_Rect srcRect;
+	SDL_Texture* texture;
 	SpriteComponent() = default;
-	SpriteComponent(int width, int height) : width(width), height(height) {}
+	SpriteComponent(SDL_Rect srcRect, SDL_Texture * texture) 
+		: 
+		srcRect(srcRect),
+		texture(texture) 
+	{
+
+	}
 };

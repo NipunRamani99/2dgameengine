@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include "../ECS/ECS.h"
+#include "../AssetStore/AssetStore.h"
 
 #include <memory>
 const int FPS = 60;
@@ -16,6 +17,7 @@ private:
 	int windowHeight = 600;
 	bool fullscreen = false;
 	std::unique_ptr<Registry> registry;
+	std::unique_ptr<AssetStore> assetStore;
 public:
 	Game();
 	~Game();

@@ -10,14 +10,12 @@
 #include "../Components/RigidBodyComponent.h"
 #include "../System/RenderSystem.h"
 Game::Game() {
-	Logger::Log("Game constructor called.");
+	Logger::Log("Game constructed.");
 	registry = std::make_unique<Registry>();
-	Logger::Log("Registry Object Created.");
 }
 
 Game::~Game() {
-
-	Logger::Log("Game destructor called.");
+	Logger::Log("Game destructed.");
 }
 
 
@@ -87,11 +85,14 @@ void Game::Setup() {
 	* 
 	* registry.registerComponent(tank, component);
 	*/
+	assetStore = std::make_unique<AssetStore>(renderer);
+	assetStore->AddTexture("tank","./assets/images/dvdlogo.png");
+
 
 	Entity tank = registry->CreateEntity();
-	registry->AddComponent<TransformComponent>(tank, glm::vec2{ 10.0,10.0 }, glm::vec2{ 1.0,1.0 }, 0.0);
-	registry->AddComponent<RigidBodyComponent>(tank, glm::vec2{ 50.0,50.0 });
-	registry->AddComponent<SpriteComponent>(tank, 30, 30);
+	registry->AddComponent<TransformComponent>(tank, glm::vec2{ 10.0,10.0 }, glm::vec2{ 0.10, 0.10 }, 0.0);
+	registry->AddComponent<RigidBodyComponent>(tank, glm::vec2{ 50.0, 50.0 });
+	registry->AddComponent<SpriteComponent>(tank, SDL_Rect{0, 0, 840, 477}, assetStore->GetTexture("tank"));
 	registry->AddSystem<MovementSystem>(registry.get());
 	registry->AddSystem<RenderSystem>(registry.get(), renderer);
 	

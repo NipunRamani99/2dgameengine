@@ -159,7 +159,7 @@ private:
 public:
 	
 	Registry() { 
-		
+		Logger::Log("Registry constructed.");
 	}
 
 	~Registry() {
@@ -172,7 +172,7 @@ public:
 			delete system;
 		}
 
-		Logger::Log("Registry Desctructor Called");
+		Logger::Log("Registry destructed.");
 	}
 
 	// Management of Entities
