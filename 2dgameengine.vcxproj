@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LibraryPath>C:\projects\2dgameengine\2dgameengine\libs\lua;C:\projects\2dgameengine\2dgameengine\libs\SDL2\lib\x64;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\projects\2dgameengine\2dgameengine\libs\include;C:\projects\2dgameengine\2dgameengine\libs\SDL2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)libs\lua;$(SolutionDir)libs\SDL2\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)libs\include;$(SolutionDir)libs\SDL2\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\projects\2dgameengine\2dgameengine\libs\include;C:\projects\2dgameengine\2dgameengine\libs\SDL2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\projects\2dgameengine\2dgameengine\libs\lua;C:\projects\2dgameengine\2dgameengine\libs\SDL2\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>$(SolutionDir)libs\include;$(SolutionDir)libs\SDL2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)libs\lua;$(SolutionDir)libs\SDL2\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
