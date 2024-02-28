@@ -8,7 +8,10 @@
 #include "../System/MovementSystem.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/RigidBodyComponent.h"
+#include "../Components/SpriteComponent.h"
+#include "../Components/TileComponent.h"
 #include "../System/RenderSystem.h"
+#include "../System/TileMapRenderSystem.h"
 Game::Game() {
 	Logger::Log("Game constructed.");
 	registry = std::make_unique<Registry>();
@@ -87,15 +90,27 @@ void Game::Setup() {
 	*/
 	assetStore = std::make_unique<AssetStore>(renderer);
 	assetStore->AddTexture("tank","./assets/images/dvdlogo.png");
+	assetStore->AddTexture("jungle_tilemap", "./assets/tilemaps/jungle.png");
 
 
 	Entity tank = registry->CreateEntity();
 	registry->AddComponent<TransformComponent>(tank, glm::vec2{ 10.0,10.0 }, glm::vec2{ 0.10, 0.10 }, 0.0);
 	registry->AddComponent<RigidBodyComponent>(tank, glm::vec2{ 50.0, 50.0 });
-	registry->AddComponent<SpriteComponent>(tank, SDL_Rect{0, 0, 840, 477}, assetStore->GetTexture("tank"));
+	registry->AddComponent<SpriteComponent>(tank, SDL_Rect{0, 0, 840, 477}, assetStore->GetTexture("tank"), 1);
+
+	float tileScale = 1.50;
+	for (int y = 0; y < 3; y++) {
+		for (int x = 0; x < 10; x++) {
+			Entity tile = registry->CreateEntity();
+			registry->AddComponent<SpriteComponent>(tile, SDL_Rect{ x * 32, y * 32, 32, 32 }, assetStore->GetTexture("jungle_tilemap"), 0);
+			registry->AddComponent<TileComponent>(tile, "jungle_tilemap", x + y * 10, glm::vec2{ tileScale, tileScale });
+		}
+	}
+	
 	registry->AddSystem<MovementSystem>(registry.get());
 	registry->AddSystem<RenderSystem>(registry.get(), renderer);
-	
+	registry->AddSystem<TileMapRenderSystem>(registry.get(), renderer);
+	registry->GetSystem<TileMapRenderSystem>().LoadTileMap();
 }
 
 void Game::ProcessInput() {
@@ -142,6 +157,9 @@ void Game::Render() {
 	SDL_RenderClear(renderer);
 
 	// TODO: Render Game Objects...
+	registry->GetSystem<TileMapRenderSystem>().Update(1 / 60.0f);
+
 	registry->GetSystem<RenderSystem>().Update(1/60.0f);
+
 	SDL_RenderPresent(renderer);
 }

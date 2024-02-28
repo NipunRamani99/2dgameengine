@@ -107,3 +107,59 @@ void updatePosition() {
 
 
 ```
+
+### Animation
+
+* 2D Sprite Based Animation
+* The animation consists of frames which are grouped together in a single texture.
+* The frames will be displayed at a certain rate which is the FPS.
+* If there are 2 frames and a FPS of 30 has to be maintained then new frames will be displayed every 2/30 = 1/15 of a second.
+* Some animations will be looped, some will not be looped.
+
+```cpp
+struct AnimationComponent {
+    int numFrames = 1;
+    int totalFrames = 1;
+    int currentFrame = 1;
+    float animationTimer = 0.0f
+    bool looping = false;
+
+    AnimationComponent() {}
+    AnimationComponent(int numFrames, int totalFrames, bool looping = false, int currentFrame = 1) 
+        :
+        numFrames(numFrames),
+        totalFrames(totalFrames),
+        looping(looping),
+        currentFrame(currentFrame),
+        animationTimer(0.0f)
+    {
+
+    }
+};
+
+
+class AnimationControlSystem {
+private:
+    float currentDt = 0.0f;
+public:
+    AnimationControlSystem() {
+        RequireComponent<AnimationComponent>();
+    }
+
+    void Update(float dt) {
+        for(Entity entity : GetAllEntities()) {
+            AnimationComponent & data = registry->GetComponent<AnimationComponent>(entity); 
+            data.animationTimer += dt;
+            if(currentDt > data.totalFrames/30.0f) {
+                data.currentFrame += 1;
+                data.animationTimer = 0.0f;
+            }
+        }
+    }
+}
+
+
+
+
+
+```
