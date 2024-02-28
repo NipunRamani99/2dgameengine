@@ -33,6 +33,7 @@ class Entity {
 private:
 	int id;
 public:
+	Entity() : id(-1) {}
 	Entity(int id) : id(id) {}
 	int GetId() const {
 		return id;

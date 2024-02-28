@@ -11,18 +11,19 @@ public:
 	{
 		RequireComponent<TransformComponent>();
 		RequireComponent<RigidBodyComponent>();
-
 		Logger::Log("Initialized MovementSystem");
 	}
 
 	void Update(float deltaTime) {
 		//Loop all entities that the system is interested in
 		for (auto entity : GetEntities()) {
-			//TODO: Update the position of all entities based on their velocity
 			auto& transformComponent = registry->GetComponent<TransformComponent>(entity);
 			const auto & rigidBodyComponent = registry->GetComponent<RigidBodyComponent>(entity);
-
 			transformComponent.position += deltaTime * rigidBodyComponent.velocity;
 		}
+	}
+
+	~MovementSystem() {
+		Logger::Log("MovementSystem destructed.");
 	}
 };

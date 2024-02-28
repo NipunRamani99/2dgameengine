@@ -21,18 +21,33 @@ public:
 	}
 
 	void Update(float deltaTime) {
-		for (Entity entity : GetEntities()) {
-			const TransformComponent & transform = registry->GetComponent<TransformComponent>(entity);
-			const SpriteComponent& sprite = registry->GetComponent<SpriteComponent>(entity);
-			SDL_Texture* texture = sprite.texture;
-			const SDL_Rect& srcRect = sprite.srcRect;
-			SDL_Rect destRect;
-			destRect.x = transform.position.x;
-			destRect.y = transform.position.y;
-			destRect.w = transform.scale.x * srcRect.w;
-			destRect.h = transform.scale.y * srcRect.h;
-		
-			SDL_RenderCopy(renderer, texture, &srcRect, &destRect);
+		for (int i = 0; i < 3; i++) {
+			for (Entity entity : GetEntities()) {
+
+				const TransformComponent& transform = registry->GetComponent<TransformComponent>(entity);
+				const SpriteComponent& sprite = registry->GetComponent<SpriteComponent>(entity);
+				if (sprite.zIndex == i) {
+					SDL_Texture* texture = sprite.texture;
+					const SDL_Rect& srcRect = sprite.srcRect;
+					SDL_Rect destRect;
+					destRect.x = transform.position.x;
+					destRect.y = transform.position.y;
+					destRect.w = transform.scale.x * srcRect.w;
+					destRect.h = transform.scale.y * srcRect.h;
+
+					SDL_RenderCopyEx(renderer,
+						texture,
+						&srcRect,
+						&destRect,
+						transform.rotation,
+						NULL,
+						SDL_FLIP_NONE);
+				}
+			}
 		}
+	}
+
+	~RenderSystem() {
+		Logger::Log("RenderSystem Destructed.");
 	}
 };
