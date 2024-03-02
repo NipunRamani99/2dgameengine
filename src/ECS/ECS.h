@@ -5,6 +5,7 @@
 #include <typeindex>
 #include <set>
 #include <memory>
+#include <deque>
 #include "../Logger/Logger.h"
 #define MAX_COMPONENTS 32
 
@@ -156,6 +157,7 @@ private:
 	// Map of active systems [index = system typeid]
 	std::unordered_map<std::type_index, System*> systems;
 
+	std::deque<int> freeIds;
 
 public:
 	

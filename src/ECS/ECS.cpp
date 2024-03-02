@@ -26,13 +26,18 @@ std::vector<Entity> System::GetEntities() const
 
 const Signature& System::GetComponentSignature() const
 {
-	// TODO: insert return statement here
 	return componentSignature;
 }
 
 // Management of Entities
 Entity Registry::CreateEntity() {
-	int entityId = ++countEntities;
+	int entityId = 0;
+	if (freeIds.empty())
+		entityId = ++countEntities;
+	else {
+		entityId = freeIds.front();
+		freeIds.pop_front();
+	}
 	if (entityId >= entityComponentSignatures.size()) {
 		entityComponentSignatures.resize(entityId + 1);
 	}
@@ -46,6 +51,7 @@ Entity Registry::CreateEntity() {
 
 void Registry::KillEntity(Entity entity)
 {
+	entitiesToBeKilled.insert(entity);
 }
 
 void Registry::AddEntityToSystems(Entity entity)
@@ -81,10 +87,15 @@ void Registry::Update(float deltaTime)
 	entitiesToBeAdded.clear();
 	for (Entity entity : entitiesToBeKilled) {
 		for (auto [_, system] : systems) {
-			if (system->GetComponentSignature() == entityComponentSignatures[entity.GetId()]) {
+			auto systemSignature = system->GetComponentSignature();
+			auto entitySignature = entityComponentSignatures[entity.GetId()];
+			bool isMatch = (systemSignature & entitySignature) == systemSignature;
+			if (isMatch) {
 				system->RemoveEntityFromSystem(entity);
 			}
 		}
+		entityComponentSignatures[entity.GetId()].reset();
+		freeIds.push_back(entity.GetId());
 	}
 	entitiesToBeKilled.clear();
 }
