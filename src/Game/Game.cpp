@@ -11,10 +11,11 @@
 #include "../Components/SpriteComponent.h"
 #include "../Components/TileComponent.h"
 #include "../Components/AnimationComponent.h"
+#include "../Components/BoxColliderComponent.h"
 #include "../System/RenderSystem.h"
 #include "../System/TileMapRenderSystem.h"
 #include "../System/AnimationSystem.h"
-
+#include "../System/CollisionSystem.h"
 Game::Game() {
 	Logger::Log("Game constructed.");
 	registry = std::make_unique<Registry>();
@@ -94,6 +95,9 @@ void Game::Setup() {
 	assetStore = std::make_unique<AssetStore>(renderer);
 	assetStore->AddTexture("chopper","./assets/images/chopper-spritesheet.png");
 	assetStore->AddTexture("jungle_tilemap", "./assets/tilemaps/jungle.png");
+	assetStore->AddTexture("tank", "./assets/images/tank-tiger-left.png");
+	assetStore->AddTexture("truck", "./assets/images/truck-ford-right.png");
+
 
 
 	Entity chopper = registry->CreateEntity();
@@ -101,6 +105,22 @@ void Game::Setup() {
 	registry->AddComponent<RigidBodyComponent>(chopper, glm::vec2{ 0.0, 0.0 });
 	registry->AddComponent<SpriteComponent>(chopper, SDL_Rect{0, 0, 32, 32}, assetStore->GetTexture("chopper"), 1);
 	registry->AddComponent<AnimationComponent>(chopper, 2, 1000 / 12, true);
+
+	Entity tank = registry->CreateEntity();
+	registry->AddComponent<TransformComponent>(tank, glm::vec2{ 350.0, 100.0 }, glm::vec2{ 1.0, 1.0 }, 0.0);
+	registry->AddComponent<RigidBodyComponent>(tank, glm::vec2{ -10.0, 0.0 });
+	registry->AddComponent<SpriteComponent>(tank, SDL_Rect{ 0, 0, 32, 32 }, assetStore->GetTexture("tank"), 1);
+	registry->AddComponent<BoxColliderComponent>(tank, 32, 32, glm::vec2{ 0.0,0.0 });
+	registry->AddComponent<AnimationComponent>(tank, 1, 1000 / 12, false);
+
+	Entity truck = registry->CreateEntity();
+	registry->AddComponent<TransformComponent>(truck, glm::vec2{ 150.0, 100.0 }, glm::vec2{ 1.0, 1.0 }, 0.0);
+	registry->AddComponent<RigidBodyComponent>(truck, glm::vec2{ 10.0, 0.0 });
+	registry->AddComponent<SpriteComponent>(truck, SDL_Rect{ 0, 0, 32, 32 }, assetStore->GetTexture("truck"), 1);
+	registry->AddComponent<BoxColliderComponent>(truck, 32, 32, glm::vec2{ 0.0,0.0 });
+	registry->AddComponent<AnimationComponent>(truck, 1, 1000 / 12, false);
+
+	registry->KillEntity(truck);
 	float tileScale = 1.50;
 	for (int y = 0; y < 3; y++) {
 		for (int x = 0; x < 10; x++) {
@@ -115,6 +135,8 @@ void Game::Setup() {
 	registry->AddSystem<AnimationSystem>(registry.get());
 	registry->AddSystem<TileMapRenderSystem>(registry.get(), renderer);
 	registry->GetSystem<TileMapRenderSystem>().LoadTileMap();
+	registry->AddSystem<CollisionSystem>(registry.get());
+
 }
 
 void Game::ProcessInput() {
@@ -153,8 +175,10 @@ void Game::Update() {
 	// DamageSystem.Update();
 	registry->GetSystem<MovementSystem>().Update(deltaTime);
 	registry->GetSystem<AnimationSystem>().Update(deltaTime);
+	registry->GetSystem<CollisionSystem>().Update(deltaTime);
 
 	registry->Update((float)deltaTime);
+
 }
 
 void Game::Render() {

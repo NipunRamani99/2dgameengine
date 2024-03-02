@@ -159,7 +159,13 @@ public:
 }
 
 
+class AnimationRenderSystem {
 
+    void Update(float dt) {
+        
+    }
+
+}
 
 
 ```
