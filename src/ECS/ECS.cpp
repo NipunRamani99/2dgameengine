@@ -83,8 +83,8 @@ void Registry::Update(float deltaTime)
 			}
 		}
 	}
-
 	entitiesToBeAdded.clear();
+	
 	for (Entity entity : entitiesToBeKilled) {
 		for (auto [_, system] : systems) {
 			auto systemSignature = system->GetComponentSignature();

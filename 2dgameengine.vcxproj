@@ -154,6 +154,9 @@
     <ClInclude Include="src\Components\TileComponent.h" />
     <ClInclude Include="src\Components\TransformComponent.h" />
     <ClInclude Include="src\ECS\ECS.h" />
+    <ClInclude Include="src\Events\CollisionEvent.h" />
+    <ClInclude Include="src\Events\Event.h" />
+    <ClInclude Include="src\Events\EventBus.h" />
     <ClInclude Include="src\Game\Game.h" />
     <ClInclude Include="src\Logger\Logger.h" />
     <ClInclude Include="src\System\AnimationSystem.h" />

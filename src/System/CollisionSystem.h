@@ -38,6 +38,11 @@ public:
 									   bTransform.position.x, bTransform.position.y, bCollider.width, bCollider.height)) {
 
 					Logger::Log("Collision Detected Between Entity ID: " + std::to_string(a.GetId()) + " and Entity ID: " + std::to_string(b.GetId()));
+
+					/**
+					* eventBus.emitEvent<CollisionEvent>(a,b);
+					* 
+					*/
 				}
 			}
 		}
