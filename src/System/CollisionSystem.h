@@ -2,6 +2,8 @@
 #include "../ECS/ECS.h"
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/TransformComponent.h"
+#include "../Events/EventBus.h"
+#include "../Events/CollisionEvent.h"
 
 class CollisionSystem : public System{
 private:
@@ -21,7 +23,7 @@ public:
 		RequireComponent<TransformComponent>();
 	}
 
-	void Update(float dt) {
+	void Update(float dt, std::unique_ptr<EventBus> & eventBus) {
 		auto entities = GetEntities();
 		for (auto i = entities.begin(); i != entities.end(); i++) {
 			Entity a = *i;
@@ -30,19 +32,18 @@ public:
 
 			for (auto j = i + 1; j != entities.end(); j++) {
 				Entity b = *j;
+				if (a == b) continue;
 				auto bTransform = registry->GetComponent<TransformComponent>(b);
 				auto bCollider = registry->GetComponent<BoxColliderComponent>(b);
+				
 
-
-				if (CheckAABBCollision(aTransform.position.x, aTransform.position.y, aCollider.width, aCollider.height,
-									   bTransform.position.x, bTransform.position.y, bCollider.width, bCollider.height)) {
+				if (CheckAABBCollision(aTransform.position.x, aTransform.position.y, aCollider.width * aTransform.scale.x, aCollider.height * aTransform.scale.y,
+									   bTransform.position.x, bTransform.position.y, bCollider.width * bTransform.scale.x, bCollider.height * bTransform.scale.y)) {
 
 					Logger::Log("Collision Detected Between Entity ID: " + std::to_string(a.GetId()) + " and Entity ID: " + std::to_string(b.GetId()));
 
-					/**
-					* eventBus.emitEvent<CollisionEvent>(a,b);
-					* 
-					*/
+					CollisionEvent event(a, b);
+				   eventBus->publishEvent<CollisionEvent>(&event);
 				}
 			}
 		}

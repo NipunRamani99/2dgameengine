@@ -7,6 +7,7 @@
 #include <memory>
 #include <deque>
 #include "../Logger/Logger.h"
+#include "../Events/EventBus.h"
 #define MAX_COMPONENTS 32
 
 // A component signature is a bitset of 32 bits and it 
@@ -89,6 +90,7 @@ public:
 	void RequireComponent();
 
 	void Update(float deltaTime) {}
+	void Update(float deltaTime, std::unique_ptr<EventBus>& ptr) {}
 };
 
 template<typename TComponent>

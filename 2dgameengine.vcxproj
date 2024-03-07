@@ -164,6 +164,7 @@
     <ClInclude Include="src\System\MovementSystem.h" />
     <ClInclude Include="src\System\RenderSystem.h" />
     <ClInclude Include="src\System\TileMapRenderSystem.h" />
+    <ClInclude Include="src\Utils\Constants.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
