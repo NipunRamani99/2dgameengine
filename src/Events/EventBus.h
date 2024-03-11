@@ -4,6 +4,7 @@
 #include <map>
 class EventBus {
 private:
+	//Map of EventType -> Lambda void wrapper(void * data) { eventHandler(static_cast<EventType*>(data)); }; 
 	std::map<std::type_index, std::vector<std::function<void(void*)>>> eventHandlers;
 public:
 

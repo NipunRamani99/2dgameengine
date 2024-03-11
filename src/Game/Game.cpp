@@ -16,6 +16,7 @@
 #include "../System/TileMapRenderSystem.h"
 #include "../System/AnimationSystem.h"
 #include "../System/CollisionSystem.h"
+#include "../System/KeyboardMovementSystem.h"
 #include <ctime>
 #include <stdlib.h>
 Game::Game() {
@@ -155,6 +156,7 @@ void Game::Setup() {
 	registry->AddSystem<TileMapRenderSystem>(registry.get(), renderer);
 	registry->GetSystem<TileMapRenderSystem>().LoadTileMap();
 	registry->AddSystem<CollisionSystem>(registry.get());
+	registry->AddSystem<KeyboardMovementSystem>(registry.get(), eventBus);
 	
 
 }
@@ -169,8 +171,19 @@ void Game::ProcessInput() {
 		case SDL_KEYDOWN:
 			if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
 				isRunning = false;
+				break;
 			}
+		case SDL_KEYUP:
+			SDL_KeyboardEvent& keyEvent = sdlEvent.key;
+			KeyboardEvent keyboardEvent{ 
+				keyEvent.keysym.sym,
+				keyEvent.keysym.scancode,
+				keyEvent.keysym.mod,
+				keyEvent.state == SDL_PRESSED,
+				keyEvent.repeat != 0
 
+			};
+			eventBus->publishEvent<KeyboardEvent>(&keyboardEvent);
 			break;
 		}
 	}
