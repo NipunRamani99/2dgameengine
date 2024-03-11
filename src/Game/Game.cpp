@@ -108,6 +108,7 @@ void Game::Setup() {
 	registry->AddComponent<TransformComponent>(chopper, glm::vec2{ 100.0,100.0 }, glm::vec2{ 1.0, 1.0}, 0.0);
 	registry->AddComponent<RigidBodyComponent>(chopper, glm::vec2{ 0.0, 0.0 });
 	registry->AddComponent<SpriteComponent>(chopper, SDL_Rect{0, 0, 32, 32}, assetStore->GetTexture("chopper"), 1);
+	registry->AddComponent<KeyboardMovementComponent>(chopper, glm::vec2{0.0, -20.0}, glm::vec2{20.0, 0.0}, glm::vec2{0.0, 20.0}, glm::vec2{-20.0, 0.0});
 	registry->AddComponent<AnimationComponent>(chopper, 2, 1000 / 12, true);
 
 	Entity tank = registry->CreateEntity();
