@@ -154,13 +154,18 @@
     <ClInclude Include="src\Components\TileComponent.h" />
     <ClInclude Include="src\Components\TransformComponent.h" />
     <ClInclude Include="src\ECS\ECS.h" />
+    <ClInclude Include="src\Events\CollisionEvent.h" />
+    <ClInclude Include="src\Events\EventBus.h" />
+    <ClInclude Include="src\Events\KeyboardEvent.h" />
     <ClInclude Include="src\Game\Game.h" />
     <ClInclude Include="src\Logger\Logger.h" />
     <ClInclude Include="src\System\AnimationSystem.h" />
     <ClInclude Include="src\System\CollisionSystem.h" />
+    <ClInclude Include="src\System\KeyboardMovementSystem.h" />
     <ClInclude Include="src\System\MovementSystem.h" />
     <ClInclude Include="src\System\RenderSystem.h" />
     <ClInclude Include="src\System\TileMapRenderSystem.h" />
+    <ClInclude Include="src\Utils\Constants.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

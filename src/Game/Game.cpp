@@ -16,9 +16,13 @@
 #include "../System/TileMapRenderSystem.h"
 #include "../System/AnimationSystem.h"
 #include "../System/CollisionSystem.h"
+#include "../System/KeyboardMovementSystem.h"
+#include <ctime>
+#include <stdlib.h>
 Game::Game() {
 	Logger::Log("Game constructed.");
 	registry = std::make_unique<Registry>();
+	eventBus = std::make_unique<EventBus>();
 }
 
 Game::~Game() {
@@ -35,8 +39,8 @@ void Game::Initialize() {
 	if (windowWidth < 0 || windowHeight < 0) {
 		SDL_DisplayMode displayMode;
 		SDL_GetCurrentDisplayMode(0, &displayMode);
-		windowWidth = 800;//displayMode.w;
-		windowHeight = 600;//displayMode.h;
+		windowWidth = 1000;//displayMode.w;
+		windowHeight =1000;//displayMode.h;
 		fullscreen = true;
 	}
 	window = SDL_CreateWindow("SDL Window", 
@@ -97,7 +101,7 @@ void Game::Setup() {
 	assetStore->AddTexture("jungle_tilemap", "./assets/tilemaps/jungle.png");
 	assetStore->AddTexture("tank", "./assets/images/tank-tiger-left.png");
 	assetStore->AddTexture("truck", "./assets/images/truck-ford-right.png");
-
+	assetStore->AddTexture("dvd", "./assets/images/dvdlogo.png");
 
 
 	Entity chopper = registry->CreateEntity();
@@ -108,19 +112,35 @@ void Game::Setup() {
 
 	Entity tank = registry->CreateEntity();
 	registry->AddComponent<TransformComponent>(tank, glm::vec2{ 350.0, 100.0 }, glm::vec2{ 1.0, 1.0 }, 0.0);
-	registry->AddComponent<RigidBodyComponent>(tank, glm::vec2{ -10.0, 0.0 });
+	registry->AddComponent<RigidBodyComponent>(tank, glm::vec2{ -50.0, 0.0 });
 	registry->AddComponent<SpriteComponent>(tank, SDL_Rect{ 0, 0, 32, 32 }, assetStore->GetTexture("tank"), 1);
 	registry->AddComponent<BoxColliderComponent>(tank, 32, 32, glm::vec2{ 0.0,0.0 });
 	registry->AddComponent<AnimationComponent>(tank, 1, 1000 / 12, false);
 
 	Entity truck = registry->CreateEntity();
 	registry->AddComponent<TransformComponent>(truck, glm::vec2{ 150.0, 100.0 }, glm::vec2{ 1.0, 1.0 }, 0.0);
-	registry->AddComponent<RigidBodyComponent>(truck, glm::vec2{ 10.0, 0.0 });
+	registry->AddComponent<RigidBodyComponent>(truck, glm::vec2{ 50.0, 0.0 });
 	registry->AddComponent<SpriteComponent>(truck, SDL_Rect{ 0, 0, 32, 32 }, assetStore->GetTexture("truck"), 1);
 	registry->AddComponent<BoxColliderComponent>(truck, 32, 32, glm::vec2{ 0.0,0.0 });
 	registry->AddComponent<AnimationComponent>(truck, 1, 1000 / 12, false);
 
-	registry->KillEntity(truck);
+	// Seed the random number generator (call this once at the beginning of your program)
+	std::srand(static_cast<unsigned>(std::time(0)));
+
+	// Random position
+	float randomPosX = static_cast<float>(std::rand() % 200) + 100; // Example: random position between 0 and 800
+	float randomPosY = static_cast<float>(std::rand() % 200) + 100; // Example: random position between 0 and 400
+
+	// Random velocity
+	float randomVelocityX = static_cast<float>(std::rand() % 100 + 50); // Example: random velocity between 50 and 150
+	float randomVelocityY = static_cast<float>(std::rand() % 100 + 50);
+
+	Entity dvd = registry->CreateEntity();
+	registry->AddComponent<TransformComponent>(dvd, glm::vec2{ randomPosX, randomPosY }, glm::vec2{ 0.3, 0.3 }, 0.0);
+	registry->AddComponent<RigidBodyComponent>(dvd, glm::vec2{ randomVelocityX, randomVelocityY }, glm::vec2{ 840, 480 });
+	registry->AddComponent<SpriteComponent>(dvd, SDL_Rect{ 0, 0, 840, 477 }, assetStore->GetTexture("dvd"), 1);
+	registry->AddComponent<BoxColliderComponent>(dvd, 840, 480, glm::vec2{ 0.0, 0.0 });
+	registry->AddComponent<AnimationComponent>(dvd, 1, 1000 / 12, false);
 	float tileScale = 1.50;
 	for (int y = 0; y < 3; y++) {
 		for (int x = 0; x < 10; x++) {
@@ -130,12 +150,14 @@ void Game::Setup() {
 		}
 	}
 	
-	registry->AddSystem<MovementSystem>(registry.get());
+	registry->AddSystem<MovementSystem>(registry.get(), eventBus.get());
 	registry->AddSystem<RenderSystem>(registry.get(), renderer);
 	registry->AddSystem<AnimationSystem>(registry.get());
 	registry->AddSystem<TileMapRenderSystem>(registry.get(), renderer);
 	registry->GetSystem<TileMapRenderSystem>().LoadTileMap();
 	registry->AddSystem<CollisionSystem>(registry.get());
+	registry->AddSystem<KeyboardMovementSystem>(registry.get(), eventBus);
+	
 
 }
 
@@ -149,7 +171,19 @@ void Game::ProcessInput() {
 		case SDL_KEYDOWN:
 			if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
 				isRunning = false;
+				break;
 			}
+		case SDL_KEYUP:
+			SDL_KeyboardEvent& keyEvent = sdlEvent.key;
+			KeyboardEvent keyboardEvent{ 
+				keyEvent.keysym.sym,
+				keyEvent.keysym.scancode,
+				keyEvent.keysym.mod,
+				keyEvent.state == SDL_PRESSED,
+				keyEvent.repeat != 0
+
+			};
+			eventBus->publishEvent<KeyboardEvent>(&keyboardEvent);
 			break;
 		}
 	}
@@ -175,7 +209,7 @@ void Game::Update() {
 	// DamageSystem.Update();
 	registry->GetSystem<MovementSystem>().Update(deltaTime);
 	registry->GetSystem<AnimationSystem>().Update(deltaTime);
-	registry->GetSystem<CollisionSystem>().Update(deltaTime);
+	registry->GetSystem<CollisionSystem>().Update(deltaTime, eventBus);
 
 	registry->Update((float)deltaTime);
 
