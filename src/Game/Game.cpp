@@ -115,14 +115,14 @@ void Game::Setup() {
 	registry->AddComponent<TransformComponent>(tank, glm::vec2{ 350.0, 100.0 }, glm::vec2{ 1.0, 1.0 }, 0.0);
 	registry->AddComponent<RigidBodyComponent>(tank, glm::vec2{ -50.0, 0.0 });
 	registry->AddComponent<SpriteComponent>(tank, SDL_Rect{ 0, 0, 32, 32 }, assetStore->GetTexture("tank"), 1);
-	registry->AddComponent<BoxColliderComponent>(tank, 32, 32, glm::vec2{ 0.0,0.0 });
+	//registry->AddComponent<BoxColliderComponent>(tank, 32, 32, glm::vec2{ 0.0,0.0 });
 	registry->AddComponent<AnimationComponent>(tank, 1, 1000 / 12, false);
 
 	Entity truck = registry->CreateEntity();
 	registry->AddComponent<TransformComponent>(truck, glm::vec2{ 150.0, 100.0 }, glm::vec2{ 1.0, 1.0 }, 0.0);
 	registry->AddComponent<RigidBodyComponent>(truck, glm::vec2{ 50.0, 0.0 });
 	registry->AddComponent<SpriteComponent>(truck, SDL_Rect{ 0, 0, 32, 32 }, assetStore->GetTexture("truck"), 1);
-	registry->AddComponent<BoxColliderComponent>(truck, 32, 32, glm::vec2{ 0.0,0.0 });
+	//registry->AddComponent<BoxColliderComponent>(truck, 32, 32, glm::vec2{ 0.0,0.0 });
 	registry->AddComponent<AnimationComponent>(truck, 1, 1000 / 12, false);
 
 	// Seed the random number generator (call this once at the beginning of your program)
@@ -139,8 +139,8 @@ void Game::Setup() {
 	Entity dvd = registry->CreateEntity();
 	registry->AddComponent<TransformComponent>(dvd, glm::vec2{ randomPosX, randomPosY }, glm::vec2{ 0.3, 0.3 }, 0.0);
 	registry->AddComponent<RigidBodyComponent>(dvd, glm::vec2{ randomVelocityX, randomVelocityY }, glm::vec2{ 840, 480 });
-	registry->AddComponent<SpriteComponent>(dvd, SDL_Rect{ 0, 0, 840, 477 }, assetStore->GetTexture("dvd"), 1);
-	registry->AddComponent<BoxColliderComponent>(dvd, 840, 480, glm::vec2{ 0.0, 0.0 });
+	//registry->AddComponent<SpriteComponent>(dvd, SDL_Rect{ 0, 0, 840, 477 }, assetStore->GetTexture("dvd"), 1);
+	//registry->AddComponent<BoxColliderComponent>(dvd, 840, 480, glm::vec2{ 0.0, 0.0 });
 	registry->AddComponent<AnimationComponent>(dvd, 1, 1000 / 12, false);
 	float tileScale = 1.50;
 	for (int y = 0; y < 3; y++) {
@@ -170,20 +170,13 @@ void Game::ProcessInput() {
 			isRunning = false;
 			break;
 		case SDL_KEYDOWN:
+		case SDL_KEYUP:
 			if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
 				isRunning = false;
 				break;
 			}
-		case SDL_KEYUP:
 			SDL_KeyboardEvent& keyEvent = sdlEvent.key;
-			KeyboardEvent keyboardEvent{ 
-				keyEvent.keysym.sym,
-				keyEvent.keysym.scancode,
-				keyEvent.keysym.mod,
-				keyEvent.state == SDL_PRESSED,
-				keyEvent.repeat != 0
-
-			};
+			KeyboardEvent keyboardEvent(keyEvent);
 			eventBus->publishEvent<KeyboardEvent>(&keyboardEvent);
 			break;
 		}

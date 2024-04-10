@@ -2,19 +2,11 @@
 #include <SDL2/SDL.h>
 
 struct KeyboardEvent {
-	SDL_Keycode keyCode;
-	SDL_Scancode scanCode;
-	Uint16 modifiers;
-	bool isPressed = false;
-	bool isRepeated = false;
+	SDL_KeyboardEvent sdlKeyEvent;
 
-	KeyboardEvent(SDL_Keycode keyCode, SDL_Scancode scanCode, Uint16 modifiers, bool isPressed, bool isRepeated) 
+	KeyboardEvent(SDL_KeyboardEvent sdlKeyEvent) 
 		:
-		keyCode(keyCode),
-		scanCode(scanCode),
-		modifiers(modifiers),
-		isPressed(isPressed),
-		isRepeated(isRepeated)
+		sdlKeyEvent(sdlKeyEvent)
 	{
 	}
 };
