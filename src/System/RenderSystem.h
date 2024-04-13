@@ -21,7 +21,7 @@ public:
 
 	}
 
-	void Update(float deltaTime) {
+	void Update(float deltaTime, SDL_Rect & camera) {
 		for (int i = 0; i < 3; i++) {
 			for (Entity entity : GetEntities()) {
 
@@ -37,8 +37,8 @@ public:
 					srcRect.x = 32 * (animData.currentFrame - 1);
 
 					SDL_Rect destRect;
-					destRect.x = transform.position.x;
-					destRect.y = transform.position.y;
+					destRect.x = transform.position.x - camera.x;
+					destRect.y = transform.position.y - camera.y;
 					destRect.w = transform.scale.x * srcRect.w;
 					destRect.h = transform.scale.y * srcRect.h;
 					 

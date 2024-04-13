@@ -6,7 +6,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
-
+#include <tuple>
 class TileMapRenderSystem : public System {
 private:
 	SDL_Renderer* renderer;
@@ -47,7 +47,13 @@ public:
 		inputFile.close();
 	}
 
-	void Update(float dt) {
+	std::tuple<int, int> GetMapDim(float tileScale, int tileSize) {
+		int mapHeight = tileScale * tileSize * tileMap.size();
+		int mapWidth = tileScale * tileSize * tileMap[0].size();
+		return { mapWidth, mapHeight };
+	}
+
+	void Update(float dt, SDL_Rect & camera) {
 		std::vector<Entity> tiles;
 		tiles.resize(30);
 		for (Entity entity : GetEntities()) {
@@ -57,7 +63,7 @@ public:
 
 		// 2d loop over the scene
 		for (size_t y = 0; y < tileMap.size(); y++) {
-			for (size_t x = 0; x < tileMap.size(); x++) {
+			for (size_t x = 0; x < tileMap[y].size(); x++) {
 				size_t idx = tileMap[y][x];
 				Entity tile = tiles[idx];
 				const SpriteComponent & spriteComponent = registry->GetComponent<SpriteComponent>(tile);
@@ -66,8 +72,8 @@ public:
 				SDL_Texture* texture = spriteComponent.texture;
 				const SDL_Rect& srcRect = spriteComponent.srcRect;
 				SDL_Rect destRect;
-				destRect.x = x*32 * tileMapData.scale.x;
-				destRect.y = y*32 * tileMapData.scale.y;
+				destRect.x = x*32 * tileMapData.scale.x - camera.x;
+				destRect.y = y*32 * tileMapData.scale.y - camera.y;
 				destRect.w = srcRect.w * tileMapData.scale.x;
 				destRect.h = srcRect.h * tileMapData.scale.y;
 

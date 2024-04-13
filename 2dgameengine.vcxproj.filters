@@ -134,5 +134,14 @@
     <ClInclude Include="src\Events\KeyboardEvent.h">
       <Filter>Header Files\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Components\KeyboardMovementComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Components\CameraFollowComponent.h">
+      <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\CameraMovementSystem.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -12,15 +12,20 @@ class Game {
 private:
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
+	SDL_Rect camera;
 	int millisecsPreviousFrame = 0;
 	bool isRunning = true;
-	int windowWidth = SCREEN_WIDTH;
-	int windowHeight = SCREEN_HEIGHT;
 	bool fullscreen = false;
 	std::unique_ptr<Registry> registry;
 	std::unique_ptr<AssetStore> assetStore;
 	std::unique_ptr<EventBus> eventBus;
 public:
+	static int windowWidth;
+	static int windowHeight;
+	static int mapWidth;
+	static int mapHeight;
+
+
 	Game();
 	~Game();
 	void Initialize();

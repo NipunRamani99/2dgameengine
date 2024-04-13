@@ -29,7 +29,7 @@ public:
 	{
 		RequireComponent<KeyboardMovementComponent>();
 		RequireComponent<SpriteComponent>();
-		RequireComponent<RigidBodyComponent>();
+		//RequireComponent<RigidBodyComponent>();
 		eventBus->subscribe(this, &KeyboardMovementSystem::KeyboardInputHandler);
 		memset(keyStates.pressed, SDL_KEYUP, sizeof(keyStates.pressed));
 	}
