@@ -29,11 +29,11 @@ public:
 			auto & rigidBodyComponent = registry->GetComponent<RigidBodyComponent>(entity);
 			transformComponent.position += deltaTime * rigidBodyComponent.velocity;
 			auto& dim = rigidBodyComponent.dim;
-			if (transformComponent.position.x < 0 || transformComponent.position.x + dim.x*transformComponent.scale.x - 1 > SCREEN_WIDTH) {
+			if (transformComponent.position.x < 0 || transformComponent.position.x + dim.x*transformComponent.scale.x - 1 > Game::mapWidth) {
 
 				rigidBodyComponent.velocity.x *= -1.0f;
 			}
-			if (transformComponent.position.y < 0 || transformComponent.position.y + dim.y*transformComponent.scale.y - 1 > SCREEN_HEIGHT) {
+			if (transformComponent.position.y < 0 || transformComponent.position.y + dim.y*transformComponent.scale.y - 1 > Game::mapHeight) {
 				rigidBodyComponent.velocity.y *= -1.0f;
 			}
 		}

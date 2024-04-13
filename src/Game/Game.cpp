@@ -12,13 +12,21 @@
 #include "../Components/TileComponent.h"
 #include "../Components/AnimationComponent.h"
 #include "../Components/BoxColliderComponent.h"
+#include "../Components/CameraFollowComponent.h"
 #include "../System/RenderSystem.h"
 #include "../System/TileMapRenderSystem.h"
 #include "../System/AnimationSystem.h"
 #include "../System/CollisionSystem.h"
 #include "../System/KeyboardMovementSystem.h"
+#include "../System/CameraMovementSystem.h"
 #include <ctime>
 #include <stdlib.h>
+
+int Game::windowWidth = SCREEN_WIDTH;
+int Game::windowHeight = SCREEN_HEIGHT;
+int Game::mapWidth;
+int Game::mapHeight;
+
 Game::Game() {
 	Logger::Log("Game constructed.");
 	registry = std::make_unique<Registry>();
@@ -62,6 +70,11 @@ void Game::Initialize() {
 		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 	}
 
+	// Initialize the camera view with the entire screen area
+	camera.x = 0;
+	camera.y = 0;
+	camera.w = windowWidth;
+	camera.h = windowHeight;
 	
 
 	
@@ -108,20 +121,22 @@ void Game::Setup() {
 	registry->AddComponent<TransformComponent>(chopper, glm::vec2{ 100.0,100.0 }, glm::vec2{ 1.0, 1.0}, 0.0);
 	registry->AddComponent<RigidBodyComponent>(chopper, glm::vec2{ 0.0, 0.0 });
 	registry->AddComponent<SpriteComponent>(chopper, SDL_Rect{0, 0, 32, 32}, assetStore->GetTexture("chopper"), 1);
+	registry->AddComponent<KeyboardMovementComponent>(chopper, glm::vec2{0.0, -50.0}, glm::vec2{50.0, 0.0}, glm::vec2{0.0, 50.0}, glm::vec2{-50.0, 0.0});
 	registry->AddComponent<AnimationComponent>(chopper, 2, 1000 / 12, true);
+	registry->AddComponent<CameraFollowComponent>(chopper);
 
 	Entity tank = registry->CreateEntity();
 	registry->AddComponent<TransformComponent>(tank, glm::vec2{ 350.0, 100.0 }, glm::vec2{ 1.0, 1.0 }, 0.0);
 	registry->AddComponent<RigidBodyComponent>(tank, glm::vec2{ -50.0, 0.0 });
 	registry->AddComponent<SpriteComponent>(tank, SDL_Rect{ 0, 0, 32, 32 }, assetStore->GetTexture("tank"), 1);
-	registry->AddComponent<BoxColliderComponent>(tank, 32, 32, glm::vec2{ 0.0,0.0 });
+	//registry->AddComponent<BoxColliderComponent>(tank, 32, 32, glm::vec2{ 0.0,0.0 });
 	registry->AddComponent<AnimationComponent>(tank, 1, 1000 / 12, false);
 
 	Entity truck = registry->CreateEntity();
 	registry->AddComponent<TransformComponent>(truck, glm::vec2{ 150.0, 100.0 }, glm::vec2{ 1.0, 1.0 }, 0.0);
 	registry->AddComponent<RigidBodyComponent>(truck, glm::vec2{ 50.0, 0.0 });
 	registry->AddComponent<SpriteComponent>(truck, SDL_Rect{ 0, 0, 32, 32 }, assetStore->GetTexture("truck"), 1);
-	registry->AddComponent<BoxColliderComponent>(truck, 32, 32, glm::vec2{ 0.0,0.0 });
+	//registry->AddComponent<BoxColliderComponent>(truck, 32, 32, glm::vec2{ 0.0,0.0 });
 	registry->AddComponent<AnimationComponent>(truck, 1, 1000 / 12, false);
 
 	// Seed the random number generator (call this once at the beginning of your program)
@@ -138,10 +153,10 @@ void Game::Setup() {
 	Entity dvd = registry->CreateEntity();
 	registry->AddComponent<TransformComponent>(dvd, glm::vec2{ randomPosX, randomPosY }, glm::vec2{ 0.3, 0.3 }, 0.0);
 	registry->AddComponent<RigidBodyComponent>(dvd, glm::vec2{ randomVelocityX, randomVelocityY }, glm::vec2{ 840, 480 });
-	registry->AddComponent<SpriteComponent>(dvd, SDL_Rect{ 0, 0, 840, 477 }, assetStore->GetTexture("dvd"), 1);
-	registry->AddComponent<BoxColliderComponent>(dvd, 840, 480, glm::vec2{ 0.0, 0.0 });
+	//registry->AddComponent<SpriteComponent>(dvd, SDL_Rect{ 0, 0, 840, 477 }, assetStore->GetTexture("dvd"), 1);
+	//registry->AddComponent<BoxColliderComponent>(dvd, 840, 480, glm::vec2{ 0.0, 0.0 });
 	registry->AddComponent<AnimationComponent>(dvd, 1, 1000 / 12, false);
-	float tileScale = 1.50;
+	float tileScale = 2.00;
 	for (int y = 0; y < 3; y++) {
 		for (int x = 0; x < 10; x++) {
 			Entity tile = registry->CreateEntity();
@@ -149,7 +164,6 @@ void Game::Setup() {
 			registry->AddComponent<TileComponent>(tile, "jungle_tilemap", x + y * 10, glm::vec2{ tileScale, tileScale });
 		}
 	}
-	
 	registry->AddSystem<MovementSystem>(registry.get(), eventBus.get());
 	registry->AddSystem<RenderSystem>(registry.get(), renderer);
 	registry->AddSystem<AnimationSystem>(registry.get());
@@ -157,6 +171,12 @@ void Game::Setup() {
 	registry->GetSystem<TileMapRenderSystem>().LoadTileMap();
 	registry->AddSystem<CollisionSystem>(registry.get());
 	registry->AddSystem<KeyboardMovementSystem>(registry.get(), eventBus);
+	registry->AddSystem<CameraMovementSystem>(registry.get());
+
+	
+	auto [mapW, mapH] = registry->GetSystem<TileMapRenderSystem>().GetMapDim(tileScale, 32);
+	mapWidth = mapW;
+	mapHeight = mapH;
 	
 
 }
@@ -169,20 +189,13 @@ void Game::ProcessInput() {
 			isRunning = false;
 			break;
 		case SDL_KEYDOWN:
+		case SDL_KEYUP:
 			if (sdlEvent.key.keysym.sym == SDLK_ESCAPE) {
 				isRunning = false;
 				break;
 			}
-		case SDL_KEYUP:
 			SDL_KeyboardEvent& keyEvent = sdlEvent.key;
-			KeyboardEvent keyboardEvent{ 
-				keyEvent.keysym.sym,
-				keyEvent.keysym.scancode,
-				keyEvent.keysym.mod,
-				keyEvent.state == SDL_PRESSED,
-				keyEvent.repeat != 0
-
-			};
+			KeyboardEvent keyboardEvent(keyEvent);
 			eventBus->publishEvent<KeyboardEvent>(&keyboardEvent);
 			break;
 		}
@@ -210,6 +223,7 @@ void Game::Update() {
 	registry->GetSystem<MovementSystem>().Update(deltaTime);
 	registry->GetSystem<AnimationSystem>().Update(deltaTime);
 	registry->GetSystem<CollisionSystem>().Update(deltaTime, eventBus);
+	registry->GetSystem<CameraMovementSystem>().Update(camera);
 
 	registry->Update((float)deltaTime);
 
@@ -220,9 +234,9 @@ void Game::Render() {
 	SDL_RenderClear(renderer);
 
 	// TODO: Render Game Objects...
-	registry->GetSystem<TileMapRenderSystem>().Update(1/60.0f);
+	registry->GetSystem<TileMapRenderSystem>().Update(1/60.0f, camera);
 
-	registry->GetSystem<RenderSystem>().Update(1/60.0f);
+	registry->GetSystem<RenderSystem>().Update(1/60.0f, camera);
 
 	SDL_RenderPresent(renderer);
 }

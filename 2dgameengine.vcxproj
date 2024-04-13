@@ -149,6 +149,8 @@
     <ClInclude Include="src\AssetStore\AssetStore.h" />
     <ClInclude Include="src\Components\AnimationComponent.h" />
     <ClInclude Include="src\Components\BoxColliderComponent.h" />
+    <ClInclude Include="src\Components\CameraFollowComponent.h" />
+    <ClInclude Include="src\Components\KeyboardMovementComponent.h" />
     <ClInclude Include="src\Components\RigidBodyComponent.h" />
     <ClInclude Include="src\Components\SpriteComponent.h" />
     <ClInclude Include="src\Components\TileComponent.h" />
@@ -160,6 +162,7 @@
     <ClInclude Include="src\Game\Game.h" />
     <ClInclude Include="src\Logger\Logger.h" />
     <ClInclude Include="src\System\AnimationSystem.h" />
+    <ClInclude Include="src\System\CameraMovementSystem.h" />
     <ClInclude Include="src\System\CollisionSystem.h" />
     <ClInclude Include="src\System\KeyboardMovementSystem.h" />
     <ClInclude Include="src\System\MovementSystem.h" />
