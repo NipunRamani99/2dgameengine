@@ -8,6 +8,7 @@
 #include <deque>
 #include "../Logger/Logger.h"
 #include "../Events/EventBus.h"
+#include "../AssetStore/AssetStore.h"
 #define MAX_COMPONENTS 32
 
 // A component signature is a bitset of 32 bits and it 

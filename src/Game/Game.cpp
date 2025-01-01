@@ -13,6 +13,8 @@
 #include "../Components/AnimationComponent.h"
 #include "../Components/BoxColliderComponent.h"
 #include "../Components/CameraFollowComponent.h"
+#include "../Components/ProjectileEmitterComponent.h"
+#include "../System/ProjectileEmitterSystem.h"
 #include "../System/RenderSystem.h"
 #include "../System/TileMapRenderSystem.h"
 #include "../System/AnimationSystem.h"
@@ -115,6 +117,7 @@ void Game::Setup() {
 	assetStore->AddTexture("tank", "./assets/images/tank-tiger-left.png");
 	assetStore->AddTexture("truck", "./assets/images/truck-ford-right.png");
 	assetStore->AddTexture("dvd", "./assets/images/dvdlogo.png");
+	assetStore->AddTexture("bullet", "./assets/images/bullet.png");
 
 
 	Entity chopper = registry->CreateEntity();
@@ -127,10 +130,11 @@ void Game::Setup() {
 
 	Entity tank = registry->CreateEntity();
 	registry->AddComponent<TransformComponent>(tank, glm::vec2{ 350.0, 100.0 }, glm::vec2{ 1.0, 1.0 }, 0.0);
-	registry->AddComponent<RigidBodyComponent>(tank, glm::vec2{ -50.0, 0.0 });
+	registry->AddComponent<RigidBodyComponent>(tank, glm::vec2{ 0.0, 0.0 });
 	registry->AddComponent<SpriteComponent>(tank, SDL_Rect{ 0, 0, 32, 32 }, assetStore->GetTexture("tank"), 1);
 	//registry->AddComponent<BoxColliderComponent>(tank, 32, 32, glm::vec2{ 0.0,0.0 });
 	registry->AddComponent<AnimationComponent>(tank, 1, 1000 / 12, false);
+	registry->AddComponent<ProjectileEmitterComponent>(tank, glm::vec2{0.0,10.0}, 1000, 10000, 10, false);
 
 	Entity truck = registry->CreateEntity();
 	registry->AddComponent<TransformComponent>(truck, glm::vec2{ 150.0, 100.0 }, glm::vec2{ 1.0, 1.0 }, 0.0);
@@ -138,6 +142,7 @@ void Game::Setup() {
 	registry->AddComponent<SpriteComponent>(truck, SDL_Rect{ 0, 0, 32, 32 }, assetStore->GetTexture("truck"), 1);
 	//registry->AddComponent<BoxColliderComponent>(truck, 32, 32, glm::vec2{ 0.0,0.0 });
 	registry->AddComponent<AnimationComponent>(truck, 1, 1000 / 12, false);
+	
 
 	// Seed the random number generator (call this once at the beginning of your program)
 	std::srand(static_cast<unsigned>(std::time(0)));
@@ -172,7 +177,7 @@ void Game::Setup() {
 	registry->AddSystem<CollisionSystem>(registry.get());
 	registry->AddSystem<KeyboardMovementSystem>(registry.get(), eventBus);
 	registry->AddSystem<CameraMovementSystem>(registry.get());
-
+	registry->AddSystem<ProjectileEmitterSystem>(registry.get());
 	
 	auto [mapW, mapH] = registry->GetSystem<TileMapRenderSystem>().GetMapDim(tileScale, 32);
 	mapWidth = mapW;
@@ -224,7 +229,7 @@ void Game::Update() {
 	registry->GetSystem<AnimationSystem>().Update(deltaTime);
 	registry->GetSystem<CollisionSystem>().Update(deltaTime, eventBus);
 	registry->GetSystem<CameraMovementSystem>().Update(camera);
-
+	registry->GetSystem<ProjectileEmitterSystem>().Update(registry, assetStore);
 	registry->Update((float)deltaTime);
 
 }

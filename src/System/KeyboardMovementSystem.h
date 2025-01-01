@@ -3,7 +3,7 @@
 #include "../Events/KeyboardEvent.h"
 #include "../Events/EventBus.h"
 #include "../Components/KeyboardMovementComponent.h"
-#define MAX_SCANCODES 512
+#define MAX_SCANCODES 2048
 
 class KeyboardMovementSystem : public System {
 private:
@@ -46,8 +46,9 @@ public:
 			if (event.type == SDL_KEYDOWN) {
 
 				// Self explanatory ngl
-				keyStates.pressed[event.keysym.sym] = SDL_KEYDOWN;
-				switch (event.keysym.sym) {
+				// will crash if any other key is pressed lmao
+				if (event.keysym.sym < 0) continue;
+				switch(event.keysym.sym){
 				case SDLK_w:
 					direction = UP;
 					break;
